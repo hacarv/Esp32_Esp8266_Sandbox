@@ -20,7 +20,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
     data[len] = 0;
     String message = (char *)data;
-    StaticJsonDocument<JSON_DOC_SIZE> doc; // Using the predefined size
+    JsonDocument doc; // Using the predefined size
     DeserializationError error = deserializeJson(doc, message);
     if (error) {
       Serial.print(F("deserializeJson() failed: "));

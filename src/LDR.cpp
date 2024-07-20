@@ -21,7 +21,7 @@ void LDR::readAndNotify() {
     int value = read();
     if (value != _lastValue) {
         _lastValue = value;
-        StaticJsonDocument<JSON_DOC_SIZE> doc;
+        JsonDocument doc;
         doc[LDR_KEY] = value;
         String jsonString;
         serializeJson(doc, jsonString);

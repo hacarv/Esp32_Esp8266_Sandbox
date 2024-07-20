@@ -5,15 +5,14 @@
 
 class StepperMotor {
 public:
-    void begin(int pin1, int pin2, int pin3, int pin4);
+    void begin(int stepPin, int dirPin, int enablePin);
     void moveSteps(int steps);
     void update();
-    void checkConnection();
+        void checkConnection();
     bool isConnected();
-
 private:
-    ContinuousStepper _stepper;
-    int _pin1, _pin2, _pin3, _pin4;
+    ContinuousStepper<StepperDriver> _stepper;
+    int _steps;
 };
 
 #endif

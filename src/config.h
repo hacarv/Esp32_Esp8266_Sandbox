@@ -2,8 +2,8 @@
 #define CONFIG_H
 
 #if defined(ESP32)
-  #define SSID "your_SSID"
-  #define PASSWORD "your_PASSWORD"
+  #define W_SSID "your_SSID"
+  #define W_PASSWORD "your_PASSWORD"
 
   #define AP_SSID "ESP32_AP"
   #define AP_PASSWORD "your_AP_PASSWORD"
@@ -12,10 +12,9 @@
   #define LED_PIN 18
   #define SERVO_PIN 5
   #define POTENTIOMETER_PIN 35
-  #define STEPPER_PIN1 19
-  #define STEPPER_PIN2 21
-  #define STEPPER_PIN3 22
-  #define STEPPER_PIN4 23
+  #define STEPPER_PIN_STEP 19
+  #define STEPPER_PIN_DIR 21
+  #define STEPPER_PIN_ENABLE 22
 
 #elif defined(ESP8266)
   #define SSID "your_SSID"
@@ -28,10 +27,9 @@
   #define LED_PIN D1
   #define SERVO_PIN D2
   #define POTENTIOMETER_PIN A0
-  #define STEPPER_PIN1 D5
-  #define STEPPER_PIN2 D6
-  #define STEPPER_PIN3 D7
-  #define STEPPER_PIN4 D8
+  #define STEPPER_PIN_STEP D5
+  #define STEPPER_PIN_DIR D6
+  #define STEPPER_PIN_ENABLE D7
 
 #endif
 

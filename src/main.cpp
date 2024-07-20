@@ -10,7 +10,6 @@
 #endif
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
-#include <Servo.h>
 #include <ContinuousStepper.h>
 #include "config.h"
 #include "LDR.h"
@@ -41,7 +40,7 @@ void setup() {
   led.begin();
   servoMotor.begin(SERVO_PIN);
   potentiometer.begin(POTENTIOMETER_PIN, 10); // Example interval: 10ms
-  stepperMotor.begin(STEPPER_PIN1, STEPPER_PIN2, STEPPER_PIN3, STEPPER_PIN4);
+  stepperMotor.begin(STEPPER_PIN_STEP, STEPPER_PIN_DIR, STEPPER_PIN_ENABLE);
 
   ws.onEvent(onWebSocketEvent);
   server.addHandler(&ws);
