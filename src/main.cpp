@@ -1,12 +1,12 @@
 #include <Arduino.h>
 #if defined(ESP32)
-  #include <WiFi.h>
-  #include <AsyncTCP.h>
-  #include <ESPAsyncWebServer.h>
+#include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #elif defined(ESP8266)
-  #include <ESP8266WiFi.h>
-  #include <ESPAsyncTCP.h>
-  #include <ESPAsyncWebServer.h>
+#include <ESP8266WiFi.h>
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #endif
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
@@ -17,8 +17,8 @@
 #include "ServoMotor.h"
 #include "Potentiometer.h"
 #include "StepperMotor.h"
-#include "WiFiConnection.h"
 #include "WebSocketHandler.h"
+#include "WiFiManager.h"
 
 // WebSocket server
 AsyncWebServer server(80);
@@ -30,11 +30,12 @@ LED led;
 ServoMotor servoMotor;
 Potentiometer potentiometer;
 StepperMotor stepperMotor;
+WiFiManager wifiManager;
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
-  setupWiFi();
-  
+
   // Setup devices with respective pins and intervals
   ldr.begin(LDR_PIN, 10); // Example interval: 10ms
   led.begin();
@@ -42,12 +43,15 @@ void setup() {
   potentiometer.begin(POTENTIOMETER_PIN, 10); // Example interval: 10ms
   stepperMotor.begin(STEPPER_PIN_STEP, STEPPER_PIN_DIR, STEPPER_PIN_ENABLE);
 
-  ws.onEvent(onWebSocketEvent);
+  // Inicializar WebSocket
+  initWebSocket();
+  wifiManager.begin();
   server.addHandler(&ws);
   server.begin();
 }
 
-void loop() {
+void loop()
+{
   unsigned long currentMillis = millis();
 
   ldr.update(currentMillis);
@@ -55,5 +59,5 @@ void loop() {
   led.update();
   servoMotor.update();
   stepperMotor.update();
+  handleWebSocket();
 }
-

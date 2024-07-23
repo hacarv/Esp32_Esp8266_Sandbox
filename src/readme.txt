@@ -25,3 +25,29 @@ JSON Message Structure
 //   "potentiometer": 456
 // }
 
+Establecer AP:
+{
+    "setAP": {
+        "ssid": "AP_SSID",
+        "password": "AP_PASSWORD",
+        "ip": "192.168.1.1"
+    }
+}
+
+Conectar a WiFi:
+{
+    "connectWiFi": {
+        "ssid": "WiFi_SSID",
+        "password": "WiFi_PASSWORD"
+    }
+}
+
+Escanear redes WiFi:
+{
+    "scanNetworks": true
+}
+
+Notificación de Estado:
+{
+    "status": "connected"
+}

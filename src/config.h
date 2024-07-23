@@ -1,13 +1,13 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define DEFAULT_SSID "HCT"
+#define DEFAULT_PASSWORD "hc172920"
+#define DEFAULT_AP_SSID "ESP-AP"
+#define DEFAULT_AP_PASSWORD "12345678"
+#define DEFAULT_AP_IP "192.168.4.1"
+
 #if defined(ESP32)
-  #define W_SSID "your_SSID"
-  #define W_PASSWORD "your_PASSWORD"
-
-  #define AP_SSID "ESP32_AP"
-  #define AP_PASSWORD "your_AP_PASSWORD"
-
   #define LDR_PIN 34
   #define LED_PIN 18
   #define SERVO_PIN 5
@@ -17,12 +17,6 @@
   #define STEPPER_PIN_ENABLE 22
 
 #elif defined(ESP8266)
-  #define SSID "your_SSID"
-  #define PASSWORD "your_PASSWORD"
-
-  #define AP_SSID "ESP8266_AP"
-  #define AP_PASSWORD "your_AP_PASSWORD"
-
   #define LDR_PIN A0
   #define LED_PIN D1
   #define SERVO_PIN D2
@@ -40,6 +34,10 @@
 #define POTENTIOMETER_KEY "potentiometer"
 #define STEPPER_KEY "stepper"
 #define ERROR_KEY "error"
+#define SET_AP_KEY "setAP"
+#define CONNECT_WIFI_KEY "connectWiFi"
+#define SCAN_NETWORKS_KEY "scanNetworks"
+#define STATUS_KEY "status"
 
 // JSON Document size
 #define JSON_DOC_SIZE 200

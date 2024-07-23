@@ -8,13 +8,14 @@ public:
     void update(unsigned long currentTime);
     void checkConnection();
     bool isConnected();
+     void readAndNotify();
 
 private:
     int _pin;
     int _lastValue;
     unsigned long _lastReadTime;
     int _interval;
-    void readAndNotify();
+   
 };
 
 #endif
