@@ -1,9 +1,8 @@
 #include "ServoMotor.h"
-#include <Arduino.h>
-#include "config.h"
-#include "WebSocketHandler.h"
 
-void ServoMotor::begin(int pin) {
+ServoMotor::ServoMotor(): DeviceBaseClass(){}
+
+void ServoMotor::begin(uint8_t pin) {
     _pin = pin;
     _servo.attach(_pin);
     _position = 90; // Default position
@@ -11,13 +10,18 @@ void ServoMotor::begin(int pin) {
     checkConnection();
 }
 
-void ServoMotor::setPosition(int position) {
+void ServoMotor::setPosition(uint8_t position) {
     _position = position;
     _servo.write(_position);
 }
 
-void ServoMotor::update() {
-    // No periodic update required for ServoMotor
+void ServoMotor::getPosition()
+{
+     JsonDocument doc;
+    doc[SERVO_KEY] = _servo.read();
+    char messageBuffer[JSON_DOC_SIZE];
+    serializeJson(doc, messageBuffer);
+    sendMessage(messageBuffer);
 }
 
 bool ServoMotor::isConnected() {
@@ -26,8 +30,7 @@ bool ServoMotor::isConnected() {
 
 void ServoMotor::checkConnection() {
     if (!isConnected()) {
-        String message = "{\"" ERROR_KEY "\":\"Servo motor not connected\"}";
-        notifyClients(message);
+        const char* message = "{\"" ERROR_KEY "\":\"Servo motor not connected\"}";
         Serial.println(message);
     }
 }

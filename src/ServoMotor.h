@@ -6,20 +6,24 @@
 #elif defined(ESP8266)
 #include <Servo.h>
 #endif
+#include <ArduinoJson.h>
+#include "config.h"
+#include "DeviceBaseClass.h"
 
-class ServoMotor
+class ServoMotor : public DeviceBaseClass
 {
 public:
-    void begin(int pin);
-    void setPosition(int position);
-    void update();
+    ServoMotor();
+    void begin(uint8_t pin);
+    void setPosition(uint8_t position);
+    void getPosition();
     void checkConnection();
     bool isConnected();
 
 private:
     Servo _servo;
-    int _pin;
-    int _position;
+    uint8_t _pin;
+    uint8_t _position;
 };
 
 #endif

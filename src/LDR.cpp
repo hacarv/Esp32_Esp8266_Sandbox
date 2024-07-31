@@ -1,49 +1,59 @@
 #include "LDR.h"
-#include <Arduino.h>
-#include <ArduinoJson.h>
-#include "WebSocketHandler.h"
-#include "config.h"
 
-void LDR::begin(int pin, int interval) {
+LDR::LDR() : DeviceBaseClass() {}
+
+void LDR::begin(uint8_t pin)
+{
     _pin = pin;
     _lastValue = -1;
-    _lastReadTime = 0;
-    _interval = interval;
     pinMode(_pin, INPUT);
     checkConnection();
 }
 
-int LDR::read() {
+int LDR::read()
+{
     return analogRead(_pin);
 }
 
-void LDR::readAndNotify() {
-    int value = read();
-    if (value != _lastValue) {
-        _lastValue = value;
-        JsonDocument doc;
-        doc[LDR_KEY] = value;
-        String jsonString;
-        serializeJson(doc, jsonString);
-        notifyClients(jsonString);
+void LDR::readAndNotify()
+{
+    if (isIntervalExpired())
+    {
+        int value = read();
+
+        if (value != _lastValue)
+        {
+            getData();
+        }
     }
 }
 
-bool LDR::isConnected() {
+void LDR::getData()
+{
+    int value = read();
+    _lastValue = value;
+    JsonDocument doc;
+     doc["device"] = LDR_KEY;
+    doc["value"] = value;
+    char messageBuffer[JSON_DOC_SIZE];
+    serializeJson(doc, messageBuffer);
+    sendMessage(messageBuffer);
+}
+
+bool LDR::isConnected()
+{
     return analogRead(_pin) != -1;
 }
 
-void LDR::checkConnection() {
-    if (!isConnected()) {
-        String message = "{\"" ERROR_KEY "\":\"LDR not connected\"}";
-        notifyClients(message);
+void LDR::checkConnection()
+{
+    if (!isConnected())
+    {
+        const char *message = "{\"" ERROR_KEY "\":\"LDR not connected\"}";
+        // notifyClients(message);
         Serial.println(message);
     }
 }
 
-void LDR::update(unsigned long currentTime) {
-    if (_interval != -1 && currentTime - _lastReadTime >= _interval) {
-        readAndNotify();
-        _lastReadTime = currentTime;
-    }
-}
+
+

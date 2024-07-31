@@ -1,9 +1,10 @@
 #include "StepperMotor.h"
-#include <Arduino.h>
-#include "config.h"
-#include "WebSocketHandler.h"
 
-void StepperMotor::begin(int stepPin, int dirPin, int enablePin) {
+
+StepperMotor::StepperMotor():DeviceBaseClass(){}
+
+void StepperMotor::begin(uint8_t stepPin, uint8_t dirPin, uint8_t enablePin) {
+    _stepPin = stepPin;
     _stepper.begin(stepPin, dirPin);
     _stepper.setEnablePin(enablePin);
     _steps = 0;
@@ -14,19 +15,23 @@ void StepperMotor::moveSteps(int steps) {
     _stepper.spin(200);
 }
 
-void StepperMotor::update() {
+void StepperMotor::getPosition()
+{
+    
+}
+
+void StepperMotor::loop() {
     _stepper.loop();
 }
 
 bool StepperMotor::isConnected() {
-    return true;//_stepper.isPowered();
+    return _stepPin != -1;
 }
 
 
 void StepperMotor::checkConnection() {
     if (!isConnected()) {
-        String message = "{\"" ERROR_KEY "\":\"Stepper motor not connected\"}";
-        notifyClients(message);
+         const char * message = "{\"" ERROR_KEY "\":\"Stepper motor not connected\"}";
         Serial.println(message);
     }
 }

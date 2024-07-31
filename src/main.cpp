@@ -1,63 +1,52 @@
 #include <Arduino.h>
-#if defined(ESP32)
-#include <WiFi.h>
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#elif defined(ESP8266)
-#include <ESP8266WiFi.h>
-#include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#endif
-#include <ArduinoJson.h>
-#include <Adafruit_NeoPixel.h>
-#include <ContinuousStepper.h>
-#include "config.h"
-#include "LDR.h"
-#include "LED.h"
-#include "ServoMotor.h"
-#include "Potentiometer.h"
-#include "StepperMotor.h"
-#include "WebSocketHandler.h"
+#include "DeviceManager.h"
 #include "WiFiManager.h"
+#include "WebServerHandler.h"
+#include "WebSocketHandler.h"
+#include "config.h"
 
-// WebSocket server
-AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
-
-// Global instances for devices
-LDR ldr;
-LED led;
-ServoMotor servoMotor;
-Potentiometer potentiometer;
-StepperMotor stepperMotor;
+DeviceManager deviceManager;
 WiFiManager wifiManager;
+WebServerHandler webServerHandler;
+WebSocketHandler webSocketHandler;
+
+// Example of a function that could be used as a member function pointer
+void sendMessageHandler(char *messageData)
+{
+  webSocketHandler.sendMessage(messageData);
+}
+
+void receivedMessageHandler(const JsonDocument &doc)
+{
+  if (doc.containsKey(SET_AP_KEY) || doc.containsKey(CONNECT_WIFI_KEY) || doc.containsKey(SCAN_NETWORKS_KEY))
+  {
+    wifiManager.handleMessage(doc);
+  }
+  else
+  {
+    deviceManager.handleWebSocketMessage(doc);
+  }
+}
 
 void setup()
 {
   Serial.begin(115200);
+  Serial.println(".....");
+  Serial.println("Init Device");
 
-  // Setup devices with respective pins and intervals
-  ldr.begin(LDR_PIN, 10); // Example interval: 10ms
-  led.begin();
-  servoMotor.begin(SERVO_PIN);
-  potentiometer.begin(POTENTIOMETER_PIN, 10); // Example interval: 10ms
-  stepperMotor.begin(STEPPER_PIN_STEP, STEPPER_PIN_DIR, STEPPER_PIN_ENABLE);
-
-  // Inicializar WebSocket
-  initWebSocket();
   wifiManager.begin();
-  server.addHandler(&ws);
-  server.begin();
+  webSocketHandler.begin(&webServerHandler.server);
+  webSocketHandler.setReceivedMessageFunction(receivedMessageHandler);
+  webServerHandler.begin();
+  deviceManager.setSendMessageFunction(sendMessageHandler);
+  deviceManager.begin();
 }
 
 void loop()
 {
-  unsigned long currentMillis = millis();
+  unsigned long currentTime = millis();
 
-  ldr.update(currentMillis);
-  potentiometer.update(currentMillis);
-  led.update();
-  servoMotor.update();
-  stepperMotor.update();
-  handleWebSocket();
+  deviceManager.readAndNotifyDevices();
+
+  webSocketHandler.Loop();
 }

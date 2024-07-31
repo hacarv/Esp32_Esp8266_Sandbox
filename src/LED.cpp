@@ -1,34 +1,75 @@
 #include "LED.h"
-#include <Arduino.h>
-#include <Adafruit_NeoPixel.h>
-#include "config.h"
-#include "WebSocketHandler.h"
 
-void LED::begin() {
-    _strip = Adafruit_NeoPixel(1, LED_PIN, NEO_GRB + NEO_KHZ800);
-    _strip.begin();
-    _strip.show(); // Initialize all pixels to 'off'
+LED::LED() : DeviceBaseClass() {}
+
+void LED::begin(uint8_t pin)
+{
+    _pin = pin;
+    _lastValue = -1;
+    pinMode(_pin, OUTPUT);
+    Serial.printf("LED - Begin: %d",_pin);
     checkConnection();
 }
 
-void LED::setColor(uint8_t r, uint8_t g, uint8_t b) {
-    _strip.setPixelColor(0, _strip.Color(r, g, b));
-    _strip.show();
+void LED::setValue(uint8_t value)
+{
+    if (value == 1)
+    {
+        digitalWrite(_pin, HIGH);
+         Serial.println("H");
+    }
+    else
+    {
+        digitalWrite(_pin, LOW);
+        Serial.println("L");
+    }
+
+    Serial.println(_pin);
+    Serial.println(value);
+    getData();
 }
 
-void LED::update() {
-    // No periodic update required for LED
+int LED::read()
+{
+    return digitalRead(_pin);
 }
 
-bool LED::isConnected() {
-    return true; // Dummy check, replace with actual connection check if needed
-}
+void LED::readAndNotify()
+{
+    if (isIntervalExpired())
+    {
+        int value = read();
 
-void LED::checkConnection() {
-    if (!isConnected()) {
-        String message = "{\"" ERROR_KEY "\":\"LED not connected\"}";
-        notifyClients(message);
-        Serial.println(message);
+        if (value != _lastValue)
+        {
+            getData();
+        }
     }
 }
 
+void LED::getData()
+{
+    int value = read();
+    _lastValue = value;
+    JsonDocument doc;
+    doc["device"] = LED_KEY;
+    doc["value"] = value;
+    char messageBuffer[JSON_DOC_SIZE];
+    serializeJson(doc, messageBuffer);
+    sendMessage(messageBuffer);
+}
+
+bool LED::isConnected()
+{
+    return analogRead(_pin) != -1;
+}
+
+void LED::checkConnection()
+{
+    if (!isConnected())
+    {
+        const char *message = "{\"" ERROR_KEY "\":\"LED not connected\"}";
+
+        Serial.println(message);
+    }
+}

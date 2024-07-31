@@ -1,43 +1,64 @@
 #include "WebSocketHandler.h"
 
+WebSocketHandler::WebSocketHandler() : ws("/ws") {}
 
-void initWebSocket() {
-    ws.onEvent([](AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
-        handleWebSocketMessage(arg, data, len);
-    });
+void WebSocketHandler::begin(AsyncWebServer *server)
+{
+  Serial.println(F("Init WebSocketHandler"));
+  ws.onEvent([this](AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
+             { this->onEvent(server, client, type, arg, data, len); });
+  server->addHandler(&ws);
+  Serial.println(F("WebSocketHandler Initialized"));
 }
 
-void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
-    AwsFrameInfo *info = (AwsFrameInfo*)arg;
-    if(info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
-        data[len] = 0;
-        JsonDocument doc;
-        deserializeJson(doc, (char*)data);
-
-        if (doc.containsKey(SET_AP_KEY) || doc.containsKey(CONNECT_WIFI_KEY) || doc.containsKey(SCAN_NETWORKS_KEY)) {
-            wifiManager.handleMessage(doc);
-        } else {
-            if (doc.containsKey(LDR_KEY)) {
-                ldr.readAndNotify();
-            }
-            if (doc.containsKey(LED_KEY)) {
-                led.setColor(doc[LED_KEY]["r"], doc[LED_KEY]["g"], doc[LED_KEY]["b"]);
-            }
-            if (doc.containsKey(SERVO_KEY)) {
-                servoMotor.setPosition(doc[SERVO_KEY]);
-            }
-            if (doc.containsKey(STEPPER_KEY)) {
-                stepperMotor.moveSteps(doc[STEPPER_KEY]);
-            }
-        }
-    }
+void WebSocketHandler::onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
+                               void *arg, uint8_t *data, size_t len)
+{
+  switch (type)
+  {
+  case WS_EVT_CONNECT:
+    Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+    break;
+  case WS_EVT_DISCONNECT:
+    Serial.printf("WebSocket client #%u disconnected\n", client->id());
+    break;
+  case WS_EVT_DATA:
+    handleWebSocketMessage(arg, data, len);
+    break;
+  case WS_EVT_PONG:
+  case WS_EVT_ERROR:
+    break;
+  }
 }
 
-void notifyClients(String message) {
-    ws.textAll(message);
+void WebSocketHandler::handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
+{
+  AwsFrameInfo *info = (AwsFrameInfo *)arg;
+  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT)
+  {
+    data[len] = 0;
+    JsonDocument doc;
+    deserializeJson(doc, (char *)data);
+    Serial.print("MSG: ");
+    Serial.println((char *)data);
+    
+    receivedMessageFunct(doc);
+  }
 }
 
-void handleWebSocket() {
-    // Manejar eventos del WebSocket
-    ws.cleanupClients();
+void WebSocketHandler::sendMessage(char *message)
+{
+  ws.textAll(message);
+  Serial.println(message);
+}
+
+void WebSocketHandler::setReceivedMessageFunction(void (*receivedMsgFunc)(const JsonDocument &))
+{
+  receivedMessageFunct = receivedMsgFunc;
+}
+
+void WebSocketHandler::Loop()
+{
+  // Manejar eventos del WebSocket
+  ws.cleanupClients();
 }

@@ -1,20 +1,25 @@
 #ifndef POTENTIOMETER_H
 #define POTENTIOMETER_H
 
-class Potentiometer {
+#include <Arduino.h>
+#include <ArduinoJson.h>
+#include "DeviceBaseClass.h"
+#include "config.h"
+
+class Potentiometer : public DeviceBaseClass
+{
 public:
-    void begin(int pin, int interval);
-    int read();
-    void update(unsigned long currentTime);
+    Potentiometer();
+    void begin(uint8_t pin);
     void checkConnection();
+    void getData();
     bool isConnected();
+    int read();
+    void readAndNotify();
 
 private:
-    int _pin;
+    uint8_t _pin = 0;
     int _lastValue;
-    unsigned long _lastReadTime;
-    int _interval;
-    void readAndNotify();
 };
 
 #endif

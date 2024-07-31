@@ -1,50 +1,55 @@
 #include "Potentiometer.h"
-#include <Arduino.h>
-#include <ArduinoJson.h>
-#include "WebSocketHandler.h"
-#include "config.h"
 
-void Potentiometer::begin(int pin, int interval) {
+Potentiometer::Potentiometer() : DeviceBaseClass() {}
+
+void Potentiometer::begin(uint8_t pin)
+{
     _pin = pin;
     _lastValue = -1;
-    _lastReadTime = 0;
-    _interval = interval;
     pinMode(_pin, INPUT);
     checkConnection();
 }
 
-int Potentiometer::read() {
+int Potentiometer::read()
+{
     return analogRead(_pin);
 }
 
-void Potentiometer::readAndNotify() {
+void Potentiometer::getData()
+{
     int value = read();
-    if (value != _lastValue) {
-        _lastValue = value;
-        JsonDocument doc;
-        doc[POTENTIOMETER_KEY] = value;
-        String jsonString;
-        serializeJson(doc, jsonString);
-        notifyClients(jsonString);
+    _lastValue = value;
+    JsonDocument doc;
+    doc["device"] = POTENTIOMETER_KEY;
+    doc["value"] = value;
+    char messageBuffer[JSON_DOC_SIZE];
+    serializeJson(doc, messageBuffer);
+    sendMessage(messageBuffer);
+}
+
+void Potentiometer::readAndNotify()
+{
+    if (isIntervalExpired())
+    {
+        int value = read();
+
+        if (value != _lastValue)
+        {
+            getData();
+        }
     }
 }
 
-bool Potentiometer::isConnected() {
+bool Potentiometer::isConnected()
+{
     return analogRead(_pin) != -1;
 }
 
-void Potentiometer::checkConnection() {
-    if (!isConnected()) {
-        String message = "{\"" ERROR_KEY "\":\"Potentiometer not connected\"}";
-        notifyClients(message);
+void Potentiometer::checkConnection()
+{
+    if (!isConnected())
+    {
+        const char *message = "{\"" ERROR_KEY "\":\"Potentiometer not connected\"}";
         Serial.println(message);
     }
 }
-
-void Potentiometer::update(unsigned long currentTime) {
-    if (_interval != -1 && currentTime - _lastReadTime >= _interval) {
-        readAndNotify();
-        _lastReadTime = currentTime;
-    }
-}
-
