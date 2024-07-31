@@ -8,7 +8,7 @@
 #define DEFAULT_AP_IP "192.168.4.1"
 
 #if defined(ESP32)
-#define LED_PIN 2
+#define LED_PIN 32
 #define LDR_PIN 34
 #define PIXEL_PIN 18
 #define SERVO_PIN 5

@@ -42,7 +42,7 @@ void Potentiometer::readAndNotify()
 
 bool Potentiometer::isConnected()
 {
-    return analogRead(_pin) != -1;
+    return _pin != 0;
 }
 
 void Potentiometer::checkConnection()

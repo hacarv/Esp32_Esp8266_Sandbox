@@ -5,10 +5,6 @@ WebServerHandler::WebServerHandler() : server(80) {}
 void WebServerHandler::begin()
 {
     Serial.println(F("Init WebServerHandler"));
-
-   
-
-  
     server.begin();
     Serial.println(F("WebServerHandler Initialized"));
 }

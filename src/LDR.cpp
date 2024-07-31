@@ -42,7 +42,7 @@ void LDR::getData()
 
 bool LDR::isConnected()
 {
-    return analogRead(_pin) != -1;
+      return _pin != 0;
 }
 
 void LDR::checkConnection()

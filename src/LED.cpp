@@ -5,14 +5,16 @@ LED::LED() : DeviceBaseClass() {}
 void LED::begin(uint8_t pin)
 {
     _pin = pin;
-    _lastValue = -1;
+    _lastValue = 0;
     pinMode(_pin, OUTPUT);
     Serial.printf("LED - Begin: %d",_pin);
+    Serial.println();
     checkConnection();
 }
 
 void LED::setValue(uint8_t value)
 {
+   
     if (value == 1)
     {
         digitalWrite(_pin, HIGH);
@@ -30,8 +32,8 @@ void LED::setValue(uint8_t value)
 }
 
 int LED::read()
-{
-    return digitalRead(_pin);
+{ 
+    return _lastValue;
 }
 
 void LED::readAndNotify()
@@ -61,7 +63,7 @@ void LED::getData()
 
 bool LED::isConnected()
 {
-    return analogRead(_pin) != -1;
+      return _pin != 0;
 }
 
 void LED::checkConnection()

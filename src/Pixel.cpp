@@ -29,7 +29,7 @@ void Pixel::setPixelColor(uint8_t pixel, uint8_t r, uint8_t g, uint8_t b)
 
 bool Pixel::isConnected()
 {
-    return _pin != 0; // Dummy check, replace with actual connection check if needed
+    return _pin != 0; 
 }
 
 void Pixel::checkConnection()

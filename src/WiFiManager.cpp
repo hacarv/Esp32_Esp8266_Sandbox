@@ -55,11 +55,11 @@ void WiFiManager::handleMessage(const JsonDocument &doc)
     }
     else if (doc.containsKey("scanNetworks"))
     {
-        // scanNetworks();
+        scanNetworks();
     }
 }
 
-void WiFiManager::scanNetworks(const char *buffer)
+void WiFiManager::scanNetworks()
 {
     int n = WiFi.scanNetworks();
     JsonDocument scanDoc;
@@ -73,7 +73,7 @@ void WiFiManager::scanNetworks(const char *buffer)
         networks.add(network);
     }
 
-    // serializeJson(scanDoc, buffer);
+    serializeJson(scanDoc, Serial);
 }
 
 void WiFiManager::connectToNetwork(const char *ssid, const char *password)
@@ -112,6 +112,7 @@ void WiFiManager::connectToNetwork(const char *ssid, const char *password)
         // serializeJson(statusDoc, jsonString);
         // notifyClients(jsonString.c_str());
     }
+    scanNetworks();
 }
 
 void WiFiManager::saveConfiguration()

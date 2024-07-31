@@ -28,7 +28,7 @@ class WiFiManager
 public:
     void begin();
     void handleMessage(const JsonDocument &doc);
-    void scanNetworks(const char* buffer);
+    void scanNetworks();
     void connectToNetwork(const char *ssid, const char *password);
     void saveConfiguration();
     void loadConfiguration();

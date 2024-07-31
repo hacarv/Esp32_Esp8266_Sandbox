@@ -35,8 +35,8 @@ void setup()
   Serial.println("Init Device");
 
   wifiManager.begin();
-  webSocketHandler.begin(&webServerHandler.server);
   webSocketHandler.setReceivedMessageFunction(receivedMessageHandler);
+  webSocketHandler.begin(&webServerHandler.server);
   webServerHandler.begin();
   deviceManager.setSendMessageFunction(sendMessageHandler);
   deviceManager.begin();

@@ -25,7 +25,7 @@ void StepperMotor::loop() {
 }
 
 bool StepperMotor::isConnected() {
-    return _stepPin != -1;
+    return _stepPin != 0;
 }
 
 
