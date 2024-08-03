@@ -11,7 +11,7 @@ void DeviceManager::begin()
     potentiometer.begin(POTENTIOMETER_PIN, POTENTIOMETER_KEY);
     relay.begin(RELAY_PIN, RELAY_KEY);
     servoMotor.begin(SERVO_PIN, SERVO_KEY);
-    stepperMotor.begin(STEPPER_PIN_STEP, STEPPER_PIN_DIR, STEPPER_PIN_ENABLE);
+    stepperMotor.begin(STEPPER_PIN_STEP, STEPPER_PIN_DIR, STEPPER_PIN_ENABLE,STEPPER_KEY);
 
     button.setSendMessageFunction(sendMessageFunct);
     dht.setSendMessageFunction(sendMessageFunct);
@@ -21,6 +21,7 @@ void DeviceManager::begin()
     potentiometer.setSendMessageFunction(sendMessageFunct);
     relay.setSendMessageFunction(sendMessageFunct);
     servoMotor.setSendMessageFunction(sendMessageFunct);
+    stepperMotor.setSendMessageFunction(sendMessageFunct);
 }
 
 DeviceBaseClass *DeviceManager::getDevice(const char *deviceKey)
@@ -57,6 +58,10 @@ DeviceBaseClass *DeviceManager::getDevice(const char *deviceKey)
     {
         return &servoMotor;
     }
+    else if (strcmp(deviceKey, STEPPER_KEY) == 0)
+    {
+        return &stepperMotor;
+    }
 
     return nullptr;
 }
@@ -72,6 +77,10 @@ void DeviceManager::readAndNotifyDevices()
     potentiometer.readAndNotify();
 
     servoMotor.readAndNotify();
+
+    stepperMotor.loop();
+
+    stepperMotor.readAndNotify();
 }
 
 void DeviceManager::handleWebSocketMessage(const JsonDocument &doc)
@@ -127,6 +136,14 @@ void DeviceManager::handleDeviceAction(DeviceBaseClass *device, const char *mess
     else if (strcmp(messageType, SET_READ_NOTIFY_KEY) == 0)
     {
         device->setReadAndNotify(doc[VALUE_KEY]);
+    }
+    else if (strcmp(messageType, SET_BRIGHTNESS_KEY) == 0)
+    {
+        device->setBrightness(doc[VALUE_KEY]);
+    }
+    else if (strcmp(messageType, SET_CANCEL_KEY) == 0)
+    {
+        device->onCancel();
     }
 }
 

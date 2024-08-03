@@ -16,9 +16,9 @@
 #define POTENTIOMETER_PIN 36
 #define RELAY_PIN 16
 #define SERVO_PIN 4
-#define STEPPER_PIN_STEP 19
-#define STEPPER_PIN_DIR 21
-#define STEPPER_PIN_ENABLE 22
+#define STEPPER_PIN_STEP 25
+#define STEPPER_PIN_DIR 26
+#define STEPPER_PIN_ENABLE 27
 
 #elif defined(ESP8266)
 #define LDR_PIN A0
@@ -56,6 +56,8 @@
 #define VALUE_KEY "Value"
 #define MESSAGE_KEY "message"
 #define SET_READ_NOTIFY_KEY "set_readAndNotify"
+#define SET_BRIGHTNESS_KEY "set_brightness"
+#define SET_CANCEL_KEY "set_cancel"
 
 // JSON Document size
 #define JSON_DOC_SIZE 200

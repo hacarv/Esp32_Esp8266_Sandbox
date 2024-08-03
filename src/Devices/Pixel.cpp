@@ -30,6 +30,13 @@ void Pixel::setPixelColor(uint8_t pixel, uint8_t r, uint8_t g, uint8_t b)
       delay(50); 
 }
 
+void Pixel::setBrightness(uint8_t value)
+{
+    _strip.setBrightness(value);
+    _strip.show();
+    delay(10); 
+}
+
 bool Pixel::isConnected()
 {
     return _pin != 0;

@@ -5,7 +5,7 @@ DeviceBaseClass::DeviceBaseClass() : sendMessageFunct(nullptr), _interval(3000),
 {
 }
 
-void DeviceBaseClass::init(uint8_t pin, const char * _deviceKey)
+void DeviceBaseClass::init(uint8_t pin, const char *_deviceKey)
 {
     deviceKey = _deviceKey;
 
@@ -46,7 +46,7 @@ void DeviceBaseClass::setInterval(int interval)
     _interval = interval;
 #if defined(ESP32)
     saveNotifyIntervalToStorage(_interval);
-#endif    
+#endif
     getInterval();
 }
 
@@ -137,7 +137,7 @@ void DeviceBaseClass::setGPIO(uint8_t pin)
     _pin = pin;
 #if defined(ESP32)
     saveGPIOToStorage(_pin);
-#endif    
+#endif
     getGPIO();
 }
 
@@ -153,7 +153,7 @@ const char *DeviceBaseClass::getCustomKey(const char *key)
     strcpy(result, deviceKey);
     strcat(result, key);
 
-Serial.print("Storage key: ");
+    Serial.print("Storage key: ");
     Serial.println(result);
 
     return result;
@@ -170,6 +170,18 @@ void DeviceBaseClass::saveGPIOToStorage(uint8_t pin)
 #endif
 }
 
+void DeviceBaseClass::setBrightness(uint8_t value)
+{
+    Serial.println(deviceKey);
+    Serial.println(F("setBrightness The function has not implemented!"));
+}
+
+void DeviceBaseClass::onCancel()
+{
+        Serial.println(deviceKey);
+    Serial.println(F("onCancel The function has not implemented!"));
+}
+
 uint8_t DeviceBaseClass::loadGPIOFromStorage(uint8_t pin)
 {
 #if defined(ESP32)
@@ -181,8 +193,6 @@ uint8_t DeviceBaseClass::loadGPIOFromStorage(uint8_t pin)
     return pin;
 #endif
 }
-
-
 
 int DeviceBaseClass::loadNotifyIntervalFromStorage(int interval)
 {

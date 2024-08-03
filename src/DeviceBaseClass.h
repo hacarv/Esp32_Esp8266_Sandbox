@@ -49,6 +49,8 @@ public:
     virtual int loadNotifyIntervalFromStorage(int interval);
     virtual uint8_t loadGPIOFromStorage(uint8_t pin);
     virtual void saveGPIOToStorage(uint8_t pin);
+    virtual void setBrightness(uint8_t value);
+    virtual void onCancel();
 
 
     // virtual void begin();

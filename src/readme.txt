@@ -66,3 +66,23 @@ Notificación de Estado:
 1. Agregar el Dispositivo Key al SystemConstants.DeviceKey
 2. Crear el Dispositivo Component en Components/Devices
 3. Agregar el link en Components/Layout/NavMenu
+
+
+1. Add Custom Service Provider to MauiProgram.cs
+2. Add Icons and Splash images to Resources/AppIcon and /Splash
+3. Add Images Folder to wwwroot Folder
+4. Chanche Icon and Splash default images on Project.csproj file
+    <!-- App Icon -->
+<MauiIcon Include="Resources\AppIcon\katrare.png" ForegroundFile="Resources\AppIcon\katrare.png" Color="#0c0c0d" />
+
+<!-- Splash Screen -->
+<MauiSplashScreen Include="Resources\Splash\katrarelogo2.png" Color="#0c0c0d" BaseSize="175,175" />
+
+5. Add Data folder on project root
+6. Copy file AppServicesExtentions.cs to Data folder
+7. Add Config folder to Data folder
+8. Copy MessageConstants.cs and SystemConstants.cs files to Config folder
+9. Add Interfaces, Models and Services folders to Data folder
+10. Add MudBlazor nuget
+11. Eliminar el contenido de App.css en wwwroot y eliminar la carpeta Bootstrap
+12. Agregar las dependencias de Mudblazor al archivo index.html
