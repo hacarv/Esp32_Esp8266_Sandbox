@@ -18,7 +18,6 @@ public:
     void readAndNotify();
 
     /// Base Class functions
-    //void setValue(const JsonDocument &doc) override;
     void getValue() override;
     void getGPIO() override;
     void setGPIO(uint8_t pin) override;

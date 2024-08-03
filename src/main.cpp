@@ -10,6 +10,10 @@ WiFiManager wifiManager;
 WebServerHandler webServerHandler;
 WebSocketHandler webSocketHandler;
 
+#if defined(ESP32)
+Preferences devicePreferences;
+#endif
+
 // Example of a function that could be used as a member function pointer
 void sendMessageHandler(char *messageData)
 {

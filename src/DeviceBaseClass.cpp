@@ -1,15 +1,20 @@
 #include "DeviceBaseClass.h"
 #include "config.h"
 
-DeviceBaseClass::DeviceBaseClass() : sendMessageFunct(nullptr), _interval(loadNotifyIntervalFromStorage(1000)), _pin(0), _lastReadTime(0)
+DeviceBaseClass::DeviceBaseClass() : sendMessageFunct(nullptr), _interval(3000), _pin(0), _lastReadTime(0)
 {
 }
 
-void DeviceBaseClass::init(uint8_t pin, const char *deviceKey)
+void DeviceBaseClass::init(uint8_t pin, const char * _deviceKey)
 {
-#if defined(ESP32)
+    deviceKey = _deviceKey;
+
+    int interval = loadNotifyIntervalFromStorage(3000);
+
+    setInterval(interval);
+
     pin = loadGPIOFromStorage(pin);
-#endif
+
     setGPIO(pin);
 }
 
@@ -19,9 +24,15 @@ void DeviceBaseClass::checkConnectionMessage()
     Serial.println();
 }
 
-void DeviceBaseClass::setGPIOMessage(uint8_t pin)
+void DeviceBaseClass::sendGPIOMessage(uint8_t pin)
 {
-    Serial.printf("%s - GPIO set: %d", deviceKey, pin);
+    Serial.printf("%s - GPIO set: %u", deviceKey, pin);
+    Serial.println();
+}
+
+void DeviceBaseClass::sendIntervalMessage(int interval)
+{
+    Serial.printf("%s - Interval set: %u", deviceKey, interval);
     Serial.println();
 }
 
@@ -30,13 +41,12 @@ void DeviceBaseClass::setSendMessageFunction(void (*sendMsgFunc)(char *messageDa
     sendMessageFunct = sendMsgFunc;
 }
 
-void DeviceBaseClass::setInterval(unsigned long interval)
+void DeviceBaseClass::setInterval(int interval)
 {
     _interval = interval;
 #if defined(ESP32)
     saveNotifyIntervalToStorage(_interval);
-#endif
-    Serial.println(_interval);
+#endif    
     getInterval();
 }
 
@@ -45,6 +55,7 @@ void DeviceBaseClass::getInterval()
     JsonDocument doc;
     doc[MESSAGE_TYPE_KEY] = SET_INTERVAL_KEY;
     doc[VALUE_KEY] = _interval;
+    sendIntervalMessage(_interval);
     sendMessage(doc);
 }
 
@@ -55,6 +66,7 @@ bool DeviceBaseClass::isIntervalExpired()
     if (_interval != -1 && currentTime - _lastReadTime >= _interval)
     {
         _lastReadTime = currentTime;
+
         return true;
     }
 
@@ -116,6 +128,7 @@ void DeviceBaseClass::getGPIO()
     JsonDocument doc;
     doc[MESSAGE_TYPE_KEY] = SET_GPIO_KEY;
     doc[VALUE_KEY] = _pin;
+    sendGPIOMessage(_pin);
     sendMessage(doc);
 }
 
@@ -124,9 +137,8 @@ void DeviceBaseClass::setGPIO(uint8_t pin)
     _pin = pin;
 #if defined(ESP32)
     saveGPIOToStorage(_pin);
-#endif
-    pinMode(_pin, OUTPUT);
-    setGPIOMessage(_pin);
+#endif    
+    getGPIO();
 }
 
 const char *DeviceBaseClass::getCustomKey(const char *key)
@@ -141,15 +153,28 @@ const char *DeviceBaseClass::getCustomKey(const char *key)
     strcpy(result, deviceKey);
     strcat(result, key);
 
+Serial.print("Storage key: ");
+    Serial.println(result);
+
     return result;
 }
 
+void DeviceBaseClass::saveGPIOToStorage(uint8_t pin)
+{
+#if defined(ESP32)
+    devicePreferences.begin(deviceKey, false);
+    devicePreferences.putInt(getCustomKey("gpio"), pin);
+    devicePreferences.end();
+#else
+    //
+#endif
+}
 
 uint8_t DeviceBaseClass::loadGPIOFromStorage(uint8_t pin)
 {
 #if defined(ESP32)
     devicePreferences.begin(deviceKey, true);
-    uint8_t value = devicePreferences.getUChar(getCustomKey("gpio"), pin);
+    uint8_t value = devicePreferences.getInt(getCustomKey("gpio"), pin);
     devicePreferences.end();
     return value;
 #else
@@ -157,22 +182,14 @@ uint8_t DeviceBaseClass::loadGPIOFromStorage(uint8_t pin)
 #endif
 }
 
-void DeviceBaseClass::saveGPIOToStorage(uint8_t pin)
-{
-#if defined(ESP32)
-    devicePreferences.begin(deviceKey, false);
-    devicePreferences.putUChar(getCustomKey("gpio"), pin);
-    devicePreferences.end();
-#else
-    //
-#endif
-}
+
 
 int DeviceBaseClass::loadNotifyIntervalFromStorage(int interval)
 {
+    sendIntervalMessage(interval);
 #if defined(ESP32)
     devicePreferences.begin(deviceKey, true);
-    uint8_t value = devicePreferences.getUChar(getCustomKey("interval"), interval);
+    int value = devicePreferences.getInt(getCustomKey("interval"), interval);
     devicePreferences.end();
     return value;
 #else

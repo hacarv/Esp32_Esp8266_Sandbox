@@ -15,7 +15,7 @@ protected:
     void (*sendMessageFunct)(char *messageData);
     uint8_t _pin = 0;
     int _lastValue;
-    unsigned long _interval;     // Interval in milliseconds
+    int _interval;     // Interval in milliseconds
     unsigned long _lastReadTime; // Last time a read was performed
     const char *deviceKey;
     bool readAndNotifyEnabled = true; // Default to enabled
@@ -23,11 +23,12 @@ protected:
 public:
     DeviceBaseClass();
 
-    void init(uint8_t pin, const char *deviceKey);
+    void init(uint8_t pin, const char * _deviceKey);
     void checkConnectionMessage();
-    void setGPIOMessage(uint8_t pin);
+    void sendGPIOMessage(uint8_t pin);
+    void sendIntervalMessage(int pin);
     void setSendMessageFunction(void (*sendMsgFunc)(char *messageData));
-    void setInterval(unsigned long interval);
+    void setInterval(int interval);
     void getInterval();
     bool isIntervalExpired();
     void sendMessage(char *messageData);

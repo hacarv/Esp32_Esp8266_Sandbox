@@ -1,18 +1,7 @@
 #include "WiFiManager.h"
 
-#if defined(ESP32)
-#include <Preferences.h>
-Preferences preferences;
-#endif
-
-
 void WiFiManager::begin()
 {
-#if defined(ESP32)
-    preferences.begin("wifi-config", false);
-#else
-    EEPROM.begin(EEPROM_SIZE);
-#endif
     loadConfiguration();
     WiFi.mode(WIFI_AP_STA);
     setupAP();
@@ -119,11 +108,13 @@ void WiFiManager::connectToNetwork(const char *ssid, const char *password)
 void WiFiManager::saveConfiguration()
 {
 #if defined(ESP32)
-    preferences.putString("ssid", wifi_data._ssid);
-    preferences.putString("password", wifi_data._password);
-    preferences.putString("apSsid", wifi_data._apSsid);
-    preferences.putString("apPassword", wifi_data._apPassword);
-    preferences.putString("apIp", wifi_data._apIp);
+    devicePreferences.begin("wifi-config", false);
+    devicePreferences.putString("ssid", wifi_data._ssid);
+    devicePreferences.putString("password", wifi_data._password);
+    devicePreferences.putString("apSsid", wifi_data._apSsid);
+    devicePreferences.putString("apPassword", wifi_data._apPassword);
+    devicePreferences.putString("apIp", wifi_data._apIp);
+    devicePreferences.end();
 #else
     EEPROM.put(0, wifi_data);
     // EEPROM.put(32, _password);
@@ -138,13 +129,15 @@ void WiFiManager::loadConfiguration()
 {
 
 #if defined(ESP32)
-
-    strlcpy(wifi_data._ssid, preferences.getString("ssid", DEFAULT_SSID).c_str(), sizeof(wifi_data._ssid));
-    strlcpy(wifi_data._password, preferences.getString("password", DEFAULT_PASSWORD).c_str(), sizeof(wifi_data._password));
-    strlcpy(wifi_data._apSsid, preferences.getString("apSsid", DEFAULT_AP_SSID).c_str(), sizeof(wifi_data._apSsid));
-    strlcpy(wifi_data._apPassword, preferences.getString("apPassword", DEFAULT_AP_PASSWORD).c_str(), sizeof(wifi_data._apPassword));
-    strlcpy(wifi_data._apIp, preferences.getString("apIp", DEFAULT_AP_IP).c_str(), sizeof(wifi_data._apIp));
+    devicePreferences.begin("wifi-config", false);
+    strlcpy(wifi_data._ssid, devicePreferences.getString("ssid", DEFAULT_SSID).c_str(), sizeof(wifi_data._ssid));
+    strlcpy(wifi_data._password, devicePreferences.getString("password", DEFAULT_PASSWORD).c_str(), sizeof(wifi_data._password));
+    strlcpy(wifi_data._apSsid, devicePreferences.getString("apSsid", DEFAULT_AP_SSID).c_str(), sizeof(wifi_data._apSsid));
+    strlcpy(wifi_data._apPassword, devicePreferences.getString("apPassword", DEFAULT_AP_PASSWORD).c_str(), sizeof(wifi_data._apPassword));
+    strlcpy(wifi_data._apIp, devicePreferences.getString("apIp", DEFAULT_AP_IP).c_str(), sizeof(wifi_data._apIp));
+    devicePreferences.end();
 #else
+    EEPROM.begin(EEPROM_SIZE);
     EEPROM.get(0, wifi_data);
     // EEPROM.get(32, _password);
     // EEPROM.get(64, _apSsid);
@@ -158,5 +151,6 @@ void WiFiManager::loadConfiguration()
         strcpy(wifi_data._apSsid, DEFAULT_AP_SSID);
         strcpy(wifi_data._apIp, DEFAULT_AP_IP);
     }
+    
 #endif
 }

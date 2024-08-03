@@ -5,6 +5,7 @@ Potentiometer::Potentiometer() : DeviceBaseClass() {}
 void Potentiometer::begin(uint8_t pin, const char *deviceKey)
 {
     init(pin, deviceKey);
+    pinMode(_pin, INPUT);
     checkConnection();
 }
 
@@ -15,6 +16,7 @@ void Potentiometer::checkConnection()
         checkConnectionMessage();
     }
 }
+
 bool Potentiometer::isConnected()
 {
     return _pin != 0;
@@ -27,7 +29,7 @@ int Potentiometer::read()
 
 void Potentiometer::readAndNotify()
 {
-    if (isIntervalExpired())
+    if (isIntervalExpired() && isReadAndNotifyEnabled())
     {
         int value = read();
 
@@ -60,5 +62,6 @@ void Potentiometer::setGPIO(uint8_t pin)
 {
     _pin = pin;
     pinMode(_pin, OUTPUT);
-    setGPIOMessage(_pin);
+    sendGPIOMessage(_pin);
 }
+

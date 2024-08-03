@@ -1,15 +1,15 @@
-#include "LDR.h"
+#include "Button.h"
 
-LDR::LDR() : DeviceBaseClass() {}
+Button::Button() : DeviceBaseClass() {}
 
-void LDR::begin(uint8_t pin, const char *deviceKey)
+void Button::begin(uint8_t pin, const char *deviceKey)
 {
     init(pin, deviceKey);
     pinMode(_pin, INPUT);
     checkConnection();
 }
 
-void LDR::checkConnection()
+void Button::checkConnection()
 {
     if (!isConnected())
     {
@@ -17,17 +17,17 @@ void LDR::checkConnection()
     }
 }
 
-bool LDR::isConnected()
+bool Button::isConnected()
 {
     return _pin != 0;
 }
 
-int LDR::read()
+int Button::read()
 {
-    return analogRead(_pin);
+    return digitalRead(_pin);
 }
 
-void LDR::readAndNotify()
+void Button::readAndNotify()
 {
     if (isIntervalExpired() && isReadAndNotifyEnabled())
     {
@@ -40,7 +40,7 @@ void LDR::readAndNotify()
     }
 }
 
-void LDR::getValue()
+void Button::getValue()
 {
     int value = read();
     _lastValue = value;
@@ -49,7 +49,7 @@ void LDR::getValue()
     doc[VALUE_KEY] = value;
     sendMessage(doc);
 }
-void LDR::getGPIO()
+void Button::getGPIO()
 {
     JsonDocument doc;
     doc[MESSAGE_TYPE_KEY] = SET_GPIO_KEY;
@@ -57,7 +57,7 @@ void LDR::getGPIO()
     sendMessage(doc);
 }
 
-void LDR::setGPIO(uint8_t pin)
+void Button::setGPIO(uint8_t pin)
 {
     _pin = pin;
     pinMode(_pin, OUTPUT);

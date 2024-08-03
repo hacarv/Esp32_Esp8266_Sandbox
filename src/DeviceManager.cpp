@@ -5,31 +5,17 @@ void DeviceManager::begin()
     // Setup devices with respective pins and intervals
     led.begin(LED_PIN, LED_KEY);
     ldr.begin(LDR_PIN, LDR_KEY);
-    pixel.begin(PIXEL_PIN, 4);
-    servoMotor.begin(SERVO_PIN);
     potentiometer.begin(POTENTIOMETER_PIN, POTENTIOMETER_KEY);
+    relay.begin(RELAY_PIN, RELAY_KEY);
+    pixel.begin(PIXEL_PIN, 4);
+    servoMotor.begin(SERVO_PIN,SERVO_KEY);    
     stepperMotor.begin(STEPPER_PIN_STEP, STEPPER_PIN_DIR, STEPPER_PIN_ENABLE);
 
     led.setSendMessageFunction(sendMessageFunct);
     ldr.setSendMessageFunction(sendMessageFunct);
     potentiometer.setSendMessageFunction(sendMessageFunct);
-}
-
-void DeviceManager::readAndNotifyDevices()
-{
-    led.readAndNotify();
-
-    ldr.readAndNotify();
-
-    //potentiometer.readAndNotify();
-}
-
-void DeviceManager::handleWebSocketMessage(const JsonDocument &doc)
-{
-    if (doc.containsKey(DEVICE_KEY))
-    {
-        handleDeviceMessage(doc);
-    }
+    relay.setSendMessageFunction(sendMessageFunct);
+    servoMotor.setSendMessageFunction(sendMessageFunct);
 }
 
 DeviceBaseClass *DeviceManager::getDevice(const char *deviceKey)
@@ -42,8 +28,37 @@ DeviceBaseClass *DeviceManager::getDevice(const char *deviceKey)
     {
         return &ldr;
     }
+    else if (strcmp(deviceKey, POTENTIOMETER_KEY) == 0)
+    {
+        return &potentiometer;
+    }
+    else if (strcmp(deviceKey, RELAY_KEY) == 0)
+    {
+        return &relay;
+    }
+     else if (strcmp(deviceKey, SERVO_KEY) == 0)
+    {
+        return &servoMotor;
+    }
 
     return nullptr;
+}
+
+void DeviceManager::readAndNotifyDevices()
+{
+    ldr.readAndNotify();
+
+    potentiometer.readAndNotify();
+
+    servoMotor.readAndNotify();
+}
+
+void DeviceManager::handleWebSocketMessage(const JsonDocument &doc)
+{
+    if (doc.containsKey(DEVICE_KEY))
+    {
+        handleDeviceMessage(doc);
+    }
 }
 
 void DeviceManager::handleDeviceMessage(const JsonDocument &doc)
@@ -62,10 +77,6 @@ void DeviceManager::handleDeviceMessage(const JsonDocument &doc)
     {
         handleDeviceAction(device, messageType, doc);
     }
-}
-void DeviceManager::setSendMessageFunction(void (*sendMsgFunc)(char *messageData))
-{
-    sendMessageFunct = sendMsgFunc;
 }
 
 // Function to handle device actions
@@ -96,4 +107,9 @@ void DeviceManager::handleDeviceAction(DeviceBaseClass *device, const char *mess
     {
         device->setReadAndNotify(doc[VALUE_KEY]);
     }
+}
+
+void DeviceManager::setSendMessageFunction(void (*sendMsgFunc)(char *messageData))
+{
+    sendMessageFunct = sendMsgFunc;
 }

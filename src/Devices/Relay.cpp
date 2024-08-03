@@ -1,15 +1,15 @@
-#include "LED.h"
+#include "Relay.h"
 
-LED::LED() : DeviceBaseClass() {}
+Relay::Relay() : DeviceBaseClass() {}
 
-void LED::begin(uint8_t pin, const char *deviceKey)
+void Relay::begin(uint8_t pin, const char *deviceKey)
 {
     init(pin,deviceKey);
     pinMode(_pin, OUTPUT);
     checkConnection();
 }
 
-void LED::checkConnection()
+void Relay::checkConnection()
 {
     if (!isConnected())
     {
@@ -17,17 +17,17 @@ void LED::checkConnection()
     }
 }
 
-bool LED::isConnected()
+bool Relay::isConnected()
 {
     return _pin != 0;
 }
 
-int LED::read()
+int Relay::read()
 {
     return _lastValue;
 }
 
-void LED::readAndNotify()
+void Relay::readAndNotify()
 {
     if (isIntervalExpired())
     {
@@ -40,7 +40,7 @@ void LED::readAndNotify()
     }
 }
 
-void LED::getValue()
+void Relay::getValue()
 {
     int value = read();
     _lastValue = value;
@@ -50,7 +50,7 @@ void LED::getValue()
     sendMessage(doc);
 }
 
-void LED::setValue(const JsonDocument &doc)
+void Relay::setValue(const JsonDocument &doc)
 {
     _lastValue = doc[VALUE_KEY];
 

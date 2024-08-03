@@ -8,11 +8,13 @@
 #define DEFAULT_AP_IP "192.168.4.1"
 
 #if defined(ESP32)
-#define LED_PIN 32
-#define LDR_PIN 34
+#define BUTTON_PIN 34
+#define LED_PIN 2
+#define LDR_PIN 39
 #define PIXEL_PIN 18
-#define SERVO_PIN 5
-#define POTENTIOMETER_PIN 35
+#define POTENTIOMETER_PIN 36
+#define RELAY_PIN 16
+#define SERVO_PIN 4
 #define STEPPER_PIN_STEP 19
 #define STEPPER_PIN_DIR 21
 #define STEPPER_PIN_ENABLE 22
@@ -29,12 +31,15 @@
 #endif
 
 // JSON Keys
-#define LDR_KEY "ldr"
+#define BUTTON_KEY "button"
 #define LED_KEY "led"
+#define LDR_KEY "ldr"
 #define PIXEL_KEY "pixel"
+#define POTENTIOMETER_KEY "pot"
+#define RELAY_KEY "relay"
 #define SERVO_KEY "servo"
-#define POTENTIOMETER_KEY "potentiometer"
 #define STEPPER_KEY "stepper"
+
 #define ERROR_KEY "error"
 #define SET_AP_KEY "setAP"
 #define CONNECT_WIFI_KEY "connectWiFi"

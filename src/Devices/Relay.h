@@ -1,19 +1,15 @@
-#ifndef SERVOMOTOR_H
-#define SERVOMOTOR_H
+#ifndef RELAY_H
+#define RELAY_H
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include "DeviceBaseClass.h"
 #include "config.h"
 
-#if defined(ESP32)
-#include "ESP32Servo.h"
-#endif
-
-class ServoMotor : public DeviceBaseClass
+class Relay : public DeviceBaseClass
 {
 public:
-    ServoMotor();
+    Relay();
     /// 
     void begin(uint8_t pin, const char *deviceKey);
     void checkConnection();
@@ -24,10 +20,9 @@ public:
     /// Base Class functions
     void setValue(const JsonDocument &doc) override;
     void getValue() override;
-    void setGPIO(uint8_t pin) override;
 
 private:
-    Servo servo;
+    
 };
 
 #endif

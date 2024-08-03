@@ -51,3 +51,18 @@ Notificación de Estado:
 {
     "status": "connected"
 }
+
+
+
+1. Agregar nombre del dispositivo en Config.h  EL dEVICE kEY Y EL dEVICE pin
+2. Crear archivos de clase .h y .cpp
+3. Agregar la referencia a DeviceManager.h              #include "Devices/Relay.h"
+4. Crear instancia del dispositovo en DeviceManager.h   Relay relay;
+5. Inicializar Dispositivo en DeviceManager::begin()
+6. Asignar función de envio de mensajes DeviceManager::begin()
+7. Agregar el Device Key a DeviceManager::getDevice(const char *deviceKey)
+8. Si el dispositivo actualiza su valor automaticamente agregar a DeviceManager::readAndNotifyDevices()
+
+1. Agregar el Dispositivo Key al SystemConstants.DeviceKey
+2. Crear el Dispositivo Component en Components/Devices
+3. Agregar el link en Components/Layout/NavMenu
