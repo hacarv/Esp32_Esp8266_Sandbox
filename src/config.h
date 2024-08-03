@@ -9,9 +9,10 @@
 
 #if defined(ESP32)
 #define BUTTON_PIN 34
+#define DHT_PIN 33
 #define LED_PIN 2
 #define LDR_PIN 39
-#define PIXEL_PIN 18
+#define PIXEL_PIN 17
 #define POTENTIOMETER_PIN 36
 #define RELAY_PIN 16
 #define SERVO_PIN 4
@@ -32,6 +33,7 @@
 
 // JSON Keys
 #define BUTTON_KEY "button"
+#define DHT_KEY "dht"
 #define LED_KEY "led"
 #define LDR_KEY "ldr"
 #define PIXEL_KEY "pixel"

@@ -12,15 +12,18 @@ class Pixel : public DeviceBaseClass
 
 public:
     Pixel();
-    void begin(uint8_t pin, uint16_t pixels);
+    void begin(uint8_t pin, uint16_t pixels, const char *deviceKey);
     void setColor(uint8_t r, uint8_t g, uint8_t b);
     void setPixelColor(uint8_t pixel, uint8_t r, uint8_t g, uint8_t b);
     void checkConnection();
     bool isConnected();
 
+        /// Base Class functions
+        void setGPIO(uint8_t pin) override;
+    void setValue(const JsonDocument &doc) override;
+
 private:
     Adafruit_NeoPixel _strip;
-    uint8_t _pin = 0;
     uint16_t _pixels;
 };
 

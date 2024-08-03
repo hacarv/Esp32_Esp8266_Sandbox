@@ -102,7 +102,7 @@ void WiFiManager::connectToNetwork(const char *ssid, const char *password)
         // serializeJson(statusDoc, jsonString);
         // notifyClients(jsonString.c_str());
     }
-    scanNetworks();
+    //scanNetworks();
 }
 
 void WiFiManager::saveConfiguration()

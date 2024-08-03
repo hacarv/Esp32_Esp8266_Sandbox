@@ -3,16 +3,21 @@
 void DeviceManager::begin()
 {
     // Setup devices with respective pins and intervals
+    button.begin(BUTTON_PIN, BUTTON_KEY);
+    dht.begin(DHT_PIN, DHT_KEY);
     led.begin(LED_PIN, LED_KEY);
     ldr.begin(LDR_PIN, LDR_KEY);
+    pixel.begin(PIXEL_PIN, 4, PIXEL_KEY);
     potentiometer.begin(POTENTIOMETER_PIN, POTENTIOMETER_KEY);
     relay.begin(RELAY_PIN, RELAY_KEY);
-    pixel.begin(PIXEL_PIN, 4);
-    servoMotor.begin(SERVO_PIN,SERVO_KEY);    
+    servoMotor.begin(SERVO_PIN, SERVO_KEY);
     stepperMotor.begin(STEPPER_PIN_STEP, STEPPER_PIN_DIR, STEPPER_PIN_ENABLE);
 
+    button.setSendMessageFunction(sendMessageFunct);
+    dht.setSendMessageFunction(sendMessageFunct);
     led.setSendMessageFunction(sendMessageFunct);
     ldr.setSendMessageFunction(sendMessageFunct);
+    pixel.setSendMessageFunction(sendMessageFunct);
     potentiometer.setSendMessageFunction(sendMessageFunct);
     relay.setSendMessageFunction(sendMessageFunct);
     servoMotor.setSendMessageFunction(sendMessageFunct);
@@ -20,13 +25,25 @@ void DeviceManager::begin()
 
 DeviceBaseClass *DeviceManager::getDevice(const char *deviceKey)
 {
-    if (strcmp(deviceKey, LED_KEY) == 0)
+    if (strcmp(deviceKey, BUTTON_KEY) == 0)
+    {
+        return &button;
+    }
+    else if (strcmp(deviceKey, DHT_KEY) == 0)
+    {
+        return &dht;
+    }
+    else if (strcmp(deviceKey, LED_KEY) == 0)
     {
         return &led;
     }
     else if (strcmp(deviceKey, LDR_KEY) == 0)
     {
         return &ldr;
+    }
+     else if (strcmp(deviceKey, PIXEL_KEY) == 0)
+    {
+        return &pixel;
     }
     else if (strcmp(deviceKey, POTENTIOMETER_KEY) == 0)
     {
@@ -36,7 +53,7 @@ DeviceBaseClass *DeviceManager::getDevice(const char *deviceKey)
     {
         return &relay;
     }
-     else if (strcmp(deviceKey, SERVO_KEY) == 0)
+    else if (strcmp(deviceKey, SERVO_KEY) == 0)
     {
         return &servoMotor;
     }
@@ -46,6 +63,10 @@ DeviceBaseClass *DeviceManager::getDevice(const char *deviceKey)
 
 void DeviceManager::readAndNotifyDevices()
 {
+    button.readAndNotify();
+
+    dht.readAndNotify();
+
     ldr.readAndNotify();
 
     potentiometer.readAndNotify();
@@ -72,7 +93,7 @@ void DeviceManager::handleDeviceMessage(const JsonDocument &doc)
 
     device = getDevice(deviceKey);
 
-    //prevent function call if device is null
+    // prevent function call if device is null
     if (device != nullptr)
     {
         handleDeviceAction(device, messageType, doc);
@@ -103,7 +124,7 @@ void DeviceManager::handleDeviceAction(DeviceBaseClass *device, const char *mess
     {
         device->getGPIO();
     }
-     else if (strcmp(messageType, SET_READ_NOTIFY_KEY) == 0)
+    else if (strcmp(messageType, SET_READ_NOTIFY_KEY) == 0)
     {
         device->setReadAndNotify(doc[VALUE_KEY]);
     }

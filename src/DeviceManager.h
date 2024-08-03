@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include "config.h"
 #include "Devices/Button.h"
+#include "Devices/DHT11.h"
 #include "Devices/LDR.h"
 #include "Devices/LED.h"
 #include "Devices/Pixel.h"
@@ -28,6 +29,7 @@ public:
 
 private:
     Button button;
+    DHT dht;
     LDR ldr;
     LED led;
     Pixel pixel;
