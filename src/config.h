@@ -41,8 +41,14 @@
 #define SCAN_NETWORKS_KEY "scanNetworks"
 #define GET_VALUE_KEY "get_value"
 #define SET_VALUE_KEY "set_value"
+#define SET_GPIO_KEY "set_gpio"
+#define GET_GPIO_KEY "get_gpio"
 #define SET_INTERVAL_KEY "set_interval"
-#define DEVICE_KEY "device"
+#define DEVICE_KEY "Device"
+#define MESSAGE_TYPE_KEY "Type"
+#define VALUE_KEY "Value"
+#define MESSAGE_KEY "message"
+#define SET_READ_NOTIFY_KEY "set_readAndNotify"
 
 // JSON Document size
 #define JSON_DOC_SIZE 200

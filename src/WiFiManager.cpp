@@ -1,6 +1,7 @@
 #include "WiFiManager.h"
 
 #if defined(ESP32)
+#include <Preferences.h>
 Preferences preferences;
 #endif
 

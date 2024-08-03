@@ -3,12 +3,12 @@
 
 #include <ArduinoJson.h>
 #include "config.h"
-#include "LDR.h"
-#include "LED.h"
-#include "Pixel.h"
-#include "Potentiometer.h"
-#include "ServoMotor.h"
-#include "StepperMotor.h"
+#include "Devices/LDR.h"
+#include "Devices/LED.h"
+#include "Devices/Pixel.h"
+#include "Devices/Potentiometer.h"
+#include "Devices/ServoMotor.h"
+#include "Devices/StepperMotor.h"
 
 class DeviceManager
 {
@@ -19,8 +19,10 @@ public:
     void begin();
     void readAndNotifyDevices();
     void handleWebSocketMessage(const JsonDocument &doc);
-    void handleDeviceRequest(const JsonDocument &doc);
+    DeviceBaseClass* getDevice(const char *deviceKey);
+    void handleDeviceMessage(const JsonDocument &doc);
     void setSendMessageFunction(void (*sendMsgFunc)(char *messageData));
+    void handleDeviceAction(DeviceBaseClass *device, const char *messageType, const JsonDocument &doc);
 
 private:
     LDR ldr;

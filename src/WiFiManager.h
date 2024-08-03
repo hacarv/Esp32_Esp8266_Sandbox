@@ -7,6 +7,7 @@
 #if defined(ESP32)
 #include <WiFi.h>
 #include <Preferences.h>
+extern Preferences preferences;
 #else
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>

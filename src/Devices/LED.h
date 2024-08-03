@@ -6,21 +6,24 @@
 #include "DeviceBaseClass.h"
 #include "config.h"
 
-class LED: public DeviceBaseClass 
+class LED : public DeviceBaseClass
 {
 public:
     LED();
-    void begin(uint8_t pin);
-    void setValue(uint8_t value);
+
+    /// 
+    void begin(uint8_t pin, const char *deviceKey);
     void checkConnection();
-    void getData();
     bool isConnected();
     int read();
     void readAndNotify();
 
+    /// Base Class functions
+    void setValue(const JsonDocument &doc) override;
+    void getValue() override;
+
 private:
-    uint8_t _pin = 0;
-    int _lastValue;
+    
 };
 
 #endif

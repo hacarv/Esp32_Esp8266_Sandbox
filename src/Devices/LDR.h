@@ -10,16 +10,21 @@ class LDR: public DeviceBaseClass
 {
 public:
     LDR();
-    void begin(uint8_t pin);
+    /// 
+    void begin(uint8_t pin, const char *deviceKey);
     void checkConnection();
-    void getData();
     bool isConnected();
     int read();
     void readAndNotify();
 
+    /// Base Class functions
+    //void setValue(const JsonDocument &doc) override;
+    void getValue() override;
+    void getGPIO() override;
+    void setGPIO(uint8_t pin) override;
+
 private:
-    uint8_t _pin = 0;
-    int _lastValue;
+
 };
 
 #endif

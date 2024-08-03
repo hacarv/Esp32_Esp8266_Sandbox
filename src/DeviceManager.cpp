@@ -3,11 +3,11 @@
 void DeviceManager::begin()
 {
     // Setup devices with respective pins and intervals
-    led.begin(LED_PIN);
-    ldr.begin(LDR_PIN);
+    led.begin(LED_PIN, LED_KEY);
+    ldr.begin(LDR_PIN, LDR_KEY);
     pixel.begin(PIXEL_PIN, 4);
     servoMotor.begin(SERVO_PIN);
-    potentiometer.begin(POTENTIOMETER_PIN);
+    potentiometer.begin(POTENTIOMETER_PIN, POTENTIOMETER_KEY);
     stepperMotor.begin(STEPPER_PIN_STEP, STEPPER_PIN_DIR, STEPPER_PIN_ENABLE);
 
     led.setSendMessageFunction(sendMessageFunct);
@@ -21,85 +21,79 @@ void DeviceManager::readAndNotifyDevices()
 
     ldr.readAndNotify();
 
-    potentiometer.readAndNotify();
+    //potentiometer.readAndNotify();
 }
 
 void DeviceManager::handleWebSocketMessage(const JsonDocument &doc)
 {
     if (doc.containsKey(DEVICE_KEY))
     {
-        handleDeviceRequest(doc);
+        handleDeviceMessage(doc);
     }
 }
 
-void DeviceManager::handleDeviceRequest(const JsonDocument &doc)
+DeviceBaseClass *DeviceManager::getDevice(const char *deviceKey)
 {
-    const char *device = doc[DEVICE_KEY];
+    if (strcmp(deviceKey, LED_KEY) == 0)
+    {
+        return &led;
+    }
+    else if (strcmp(deviceKey, LDR_KEY) == 0)
+    {
+        return &ldr;
+    }
 
-     if (strcmp(device, LED_KEY) == 0)
+    return nullptr;
+}
+
+void DeviceManager::handleDeviceMessage(const JsonDocument &doc)
+{
+    if (!doc.containsKey(MESSAGE_TYPE_KEY))
+        return;
+
+    const char *deviceKey = doc[DEVICE_KEY];
+    const char *messageType = doc[MESSAGE_TYPE_KEY];
+    DeviceBaseClass *device;
+
+    device = getDevice(deviceKey);
+
+    //prevent function call if device is null
+    if (device != nullptr)
     {
-        if (doc.containsKey(GET_VALUE_KEY) && strcmp(doc[GET_VALUE_KEY], "value") == 0)
-        {
-           led.getData();
-        }
-        if (doc.containsKey(SET_INTERVAL_KEY))
-        {
-            led.setInterval(doc[SET_INTERVAL_KEY]);
-        }
-        if (doc.containsKey(SET_VALUE_KEY))
-        {
-            led.setValue(doc[SET_VALUE_KEY]);
-        }
-        if (doc.containsKey("set_pin"))
-        {
-            led.begin(doc["set_pin"]);
-        }
-    }
-    if (strcmp(device, LDR_KEY) == 0)
-    {
-        if (doc.containsKey(GET_VALUE_KEY) && strcmp(doc[GET_VALUE_KEY], "value") == 0)
-        {
-            ldr.getData();
-        }
-        if (doc.containsKey(SET_INTERVAL_KEY))
-        {
-            ldr.setInterval(doc[SET_INTERVAL_KEY]);
-        }
-    }
-    else if (strcmp(device, POTENTIOMETER_KEY) == 0)
-    {
-        if (doc.containsKey(GET_VALUE_KEY) && strcmp(doc[GET_VALUE_KEY], "value") == 0)
-        {
-            potentiometer.getData();
-        }
-        if (doc.containsKey(SET_INTERVAL_KEY))
-        {
-            potentiometer.setInterval(doc[SET_INTERVAL_KEY]);
-        }
-    }
-    else if (strcmp(device, PIXEL_KEY) == 0)
-    {
-        if (doc.containsKey(SET_VALUE_KEY))
-        {
-            pixel.setColor(doc[SET_VALUE_KEY]["r"], doc[SET_VALUE_KEY]["g"], doc[SET_VALUE_KEY]["b"]);
-        }
-    }
-    else if (strcmp(device, SERVO_KEY) == 0)
-    {
-        if (doc.containsKey(SET_VALUE_KEY))
-        {
-            servoMotor.setPosition(doc[SET_VALUE_KEY]);
-        }
-    }
-    else if (strcmp(device, STEPPER_KEY) == 0)
-    {
-        if (doc.containsKey(SET_VALUE_KEY))
-        {
-            stepperMotor.moveSteps(doc[SET_VALUE_KEY]);
-        }
+        handleDeviceAction(device, messageType, doc);
     }
 }
 void DeviceManager::setSendMessageFunction(void (*sendMsgFunc)(char *messageData))
 {
     sendMessageFunct = sendMsgFunc;
+}
+
+// Function to handle device actions
+void DeviceManager::handleDeviceAction(DeviceBaseClass *device, const char *messageType, const JsonDocument &doc)
+{
+    if (strcmp(messageType, GET_VALUE_KEY) == 0)
+    {
+        device->getValue();
+    }
+    else if (strcmp(messageType, SET_INTERVAL_KEY) == 0)
+    {
+        device->setInterval(doc[VALUE_KEY]);
+    }
+    else if (strcmp(messageType, SET_VALUE_KEY) == 0)
+    {
+        device->setValue(doc);
+    }
+    else if (strcmp(messageType, SET_GPIO_KEY) == 0)
+    {
+        device->setGPIO(doc[VALUE_KEY]);
+        device->getGPIO();
+    }
+    else if (strcmp(messageType, GET_GPIO_KEY) == 0)
+    {
+        device->getGPIO();
+    }
+     else if (strcmp(messageType, SET_READ_NOTIFY_KEY) == 0)
+    {
+        device->setReadAndNotify(doc[VALUE_KEY]);
+    }
 }
