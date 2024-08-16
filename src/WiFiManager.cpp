@@ -3,7 +3,7 @@
 void WiFiManager::begin()
 {
     loadConfiguration();
-    WiFi.mode(WIFI_AP_STA);
+    WiFi.mode(WIFI_AP);
     setupAP();
     if (strlen(wifi_data._ssid) > 0)
     {
