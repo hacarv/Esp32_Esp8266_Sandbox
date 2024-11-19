@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #define DEFAULT_SSID ""
-#define DEFAULT_PASSWORD "1702shd1"
+#define DEFAULT_PASSWORD "12345678"
 #define DEFAULT_AP_SSID "ESP-AP"
 #define DEFAULT_AP_PASSWORD ""
 #define DEFAULT_AP_IP "192.168.4.1"
